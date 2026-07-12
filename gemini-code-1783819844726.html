@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>발표 자료 - 기억 보조 시스템</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Malgun Gothic', sans-serif;
+    background: #fdf8ef;
+    color: #3a3226;
+    overflow: hidden;
+    height: 100vh;
+  }
+  
+  /* 슬라이드 컨테이너 */
+  .slide-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+  
+  /* 개별 슬라이드 스타일 */
+  .slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 60px;
+    text-align: center;
+  }
+  
+  .slide.active {
+    opacity: 1;
+    visibility: visible;
+  }
+  
+  /* 슬라이드 내부 요소 타이포그래피 */
+  .slide h1 {
+    font-size: 3.5rem;
+    color: #5d4037;
+    margin-bottom: 20px;
+    word-break: keep-all;
+  }
+  
+  .slide h2 {
+    font-size: 3.2rem;
+    color: #6d4c41;
+    border-bottom: 4px solid #8d6e63;
+    padding-bottom: 15px;
+    display: inline-block;
+    word-break: keep-all;
+  }
+  
+  .slide p {
+    font-size: 1.5rem;
+    line-height: 1.8;
+    color: #4e443c;
+    max-width: 900px;
+    word-break: keep-all;
+  }
+  
+  /* 강조용 박스 스타일 */
+  .highlight-box {
+    background: #fff;
+    border: 3px solid #8d6e63;
+    border-radius: 14px;
+    padding: 30px 50px;
+    margin-top: 30px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  }
+
+  /* 하단 컨트롤러 */
+  .controls {
+    position: absolute;
+    bottom: 30px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    z-index: 10;
+  }
+  
+  .btn {
+    background: #8d6e63;
+    color: #fff;
+    border: none;
+    padding: 12px 24px;
+    font-size: 1.1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.2s;
+  }
+  
+  .btn:hover { background: #6d4c41; }
+  
+  .progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 8px;
+    background: #8d6e63;
+    transition: width 0.3s ease;
+  }
+</style>
+</head>
+<body>
+
+<div class="slide-container">
+  
+  <div class="slide active">
+    <h1>🧠 기억 보조 시스템</h1>
+    <p style="font-size: 1.8rem; color: #8d6e63; margin-top: 10px; font-weight: bold;">치매 어르신을 위한 융합 인지 재활 솔루션</p>
+    <div style="margin-top: 50px; font-size: 1.3rem; color: #7a7065;">
+      발표자: 김채원
+    </div>
+  </div>
+  
+  <div class="slide">
+    <h2>1. 기획 배경 및 목적</h2>
+  </div>
+  
+  <div class="slide">
+    <h2 style="font-size: 2.5rem; margin-bottom: 30px;">2. 핵심 제공 기능</h2>
+    <div style="display: flex; gap: 30px; margin-top: 20px;">
+      <div class="highlight-box" style="width: 280px;">
+        <h3>📅 오늘 할 일</h3>
+        <p style="font-size: 1.1rem; margin-top: 10px;">규칙적인 루틴 제공을 통한 단기 기억 보조</p>
+      </div>
+      <div class="highlight-box" style="width: 280px;">
+        <h3>👨‍👩‍👧 우리 가족 둘러보기</h3>
+        <p style="font-size: 1.1rem; margin-top: 10px;">얼굴 인식 및 소중한 에피소드 매칭 리마인딩</p>
+      </div>
+      <div class="highlight-box" style="width: 280px;">
+        <h3>🗺️ 내 인생 지도</h3>
+        <p style="font-size: 1.1rem; margin-top: 10px;">장소 기반의 과거 기억 자극 및 대화 유도</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="slide">
+    <h2 style="font-size: 2.5rem; margin-bottom: 30px;">3. 미래 비전 및 확장성</h2>
+    <div class="highlight-box" style="background: #ede7f6; border-color: #7e57c2; max-width: 800px;">
+      <h3 style="font-size: 1.8rem; color: #5e35b1; margin-bottom: 15px;">🕶️ 웨어러블 스마트 글래스 연동 아이디어</h3>
+      <p style="font-size: 1.3rem; text-align: left; line-height: 1.8;">
+        현재 구축된 웹 베이스 데이터 아키텍처를 기반으로 향후 <b>스마트 글래스 카메라</b>와 연동합니다. 실시간 안면 인식을 통해 안경 너머로 가족을 바라볼 때, <b>"손녀 채원이에요"</b>라는 인지 보조 음성을 골전도 스피커로 출력하는 실시간 라이프 케어 솔루션으로 진화합니다.
+      </p>
+    </div>
+  </div>
+  
+  <div class="slide">
+    <h1>감사합니다</h1>
+    <p style="font-size: 1.6rem; color: #8d6e63; margin-top: 15px;">소중한 기억을 기술로 함께 지켜나가겠습니다.</p>
+    <p style="font-size: 1.1rem; color: #a19586; margin-top: 50px;">Q&A</p>
+  </div>
+
+</div>
+
+<div class="controls">
+  <button class="btn" onclick="moveSlide(-1)">이전</button>
+  <button class="btn" onclick="moveSlide(1)">다음</button>
+</div>
+<div class="progress" id="progressBar"></div>
+
+<script>
+  let currentSlide = 0;
+  const slides = document.querySelectorAll('.slide');
+  const progressBar = document.getElementById('progressBar');
+
+  function updateSlide() {
+    slides.forEach((slide, index) => {
+      slide.classList.toggle('active', index === currentSlide);
+    });
+    const progressPercent = ((currentSlide + 1) / slides.length) * 100;
+    progressBar.style.width = progressPercent + '%';
+  }
+
+  function moveSlide(direction) {
+    currentSlide += direction;
+    if (currentSlide < 0) currentSlide = 0;
+    if (currentSlide >= slides.length) currentSlide = slides.length - 1;
+    updateSlide();
+  }
+
+  window.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === ' ') {
+      moveSlide(1);
+    } else if (e.key === 'ArrowLeft') {
+      moveSlide(-1);
+    }
+  });
+
+  updateSlide();
+</script>
+
+</body>
+</html>
