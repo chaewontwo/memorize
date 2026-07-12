@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🧠 기억 보조 시스템 - 김채원</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Malgun Gothic', sans-serif; background: #fdf8ef; color: #3a3226; font-size: 1.05rem; }
+  header { background: #8d6e63; color: #fff; padding: 30px 20px; text-align: center; }
+  header h1 { font-size: 1.7rem; }
+  header p { margin-top: 6px; opacity: 0.92; font-size: 0.95rem; }
+  .container { max-width: 800px; margin: 30px auto; padding: 0 16px; }
+  .box { background: #fff; border-radius: 14px; padding: 26px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+  .box h2 { font-size: 1.25rem; margin-bottom: 16px; color: #6d4c41; }
+  .today-info { text-align: center; border: 3px solid #8d6e63; background: #fffdf9; }
+  .today-info .morning-message { background: #f5ede2; padding: 16px; border-radius: 10px; margin-bottom: 20px; line-height: 1.6; }
+  .today-info .morning-message h3 { font-size: 1.4rem; color: #5d4037; margin-bottom: 6px; }
+  .today-info .morning-message p { font-size: 1.15rem; color: #6d4c41; font-weight: bold; }
+  .today-info .date { font-size: 1.9rem; font-weight: bold; line-height: 1.4; margin-top: 10px; }
+  .today-info .clock { font-size: 2.8rem; font-weight: bold; color: #6d4c41; margin: 8px 0; }
+  .today-info .greeting { font-size: 1.15rem; font-weight: bold; color: #8d6e63; }
+  .schedule-item { display: flex; gap: 14px; align-items: center; padding: 16px; border: 2px solid #f0e6d8; border-radius: 12px; margin-bottom: 12px; font-size: 1.1rem; }
+  .schedule-item .time { font-weight: bold; color: #6d4c41; min-width: 90px; font-size: 1.15rem; }
+  .family-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; }
+  .family-card { text-align: center; border: 2px solid #f0e6d8; border-radius: 14px; padding: 16px 8px; cursor: pointer; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .family-card:hover { background: #faf3e8; border-color: #d7ccc8; }
+  .family-card.active { border-color: #8d6e63; background: #f5ede2; }
+  .family-card .face { display: flex; align-items: center; justify-content: center; min-height: 80px; }
+  .family-card .face-visual { font-size: 3rem; }
+  .family-card .face-img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; }
+  .family-card .fname { font-weight: bold; margin-top: 8px; font-size: 1.05rem; }
+  .family-card .frel { font-size: 0.85rem; color: #8d6e63; }
+  .family-detail { display: none; margin-top: 18px; background: #faf3e8; border-radius: 14px; padding: 22px; text-align: center; }
+  .family-detail .big-face { display: flex; align-items: center; justify-content: center; margin-bottom: 10px; min-height: 120px; }
+  .family-detail .big-face-visual { font-size: 5.5rem; }
+  .family-detail .big-face-img { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; }
+  .family-detail .dname { font-size: 1.5rem; font-weight: bold; margin: 10px 0 4px; }
+  .family-detail .drel { color: #8d6e63; font-size: 1.05rem; margin-bottom: 14px; }
+  .family-detail .dstory { font-size: 1.05rem; line-height: 1.8; text-align: left; background: #fff; border-radius: 10px; padding: 16px; }
+  .family-detail .dcall { display: inline-block; margin-top: 14px; padding: 12px 26px; background: #8d6e63; color: #fff; border-radius: 30px; font-size: 1rem; text-decoration: none; }
+  #lifeMap { height: 340px; border-radius: 12px; }
+  .life-timeline { margin-top: 16px; }
+  .life-item { display: flex; gap: 14px; padding: 14px; border: 2px solid #f0e6d8; border-radius: 12px; margin-bottom: 10px; cursor: pointer; align-items: center; }
+  .life-item:hover { background: #faf3e8; }
+  .life-item .year { font-weight: bold; color: #6d4c41; min-width: 70px; font-size: 1.05rem; }
+  .life-item .life-text { font-size: 0.98rem; line-height: 1.6; }
+  .map-note { font-size: 0.85rem; color: #998; margin-top: 10px; }
+  .faq-btn { display: block; width: 100%; text-align: left; padding: 16px; font-size: 1.05rem; border: 2px solid #f0e6d8; background: #fff; border-radius: 12px; margin-bottom: 10px; cursor: pointer; font-family: inherit; }
+  .faq-answer { display: none; padding: 14px 16px; background: #faf3e8; border-radius: 10px; margin: -4px 0 12px; line-height: 1.7; }
+  .glass-note { background: #ede7f6; border-radius: 10px; padding: 14px 16px; font-size: 0.88rem; color: #5e35b1; line-height: 1.6; margin-top: 14px; }
+  .back { display: block; text-align: center; margin: 30px 0; color: #6d4c41; }
+  .loading { text-align: center; padding: 20px; font-size: 1.2rem; color: #8d6e63; font-weight: bold; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🧠 기억 보조 시스템</h1>
+  <p>소중한 기억을 함께 지켜요 — 만든 사람: 김채원</p>
+</header>
+
+<div class="container">
+  <div class="box today-info">
+    <div class="morning-message">
+      <h3>안녕하세요, 할머니! 다 괜찮아요.</h3>
+      <p>여기는 평생 정드신 안전한 할머니 자택(이도동 집)입니다.<br>
+      잠시 기억이 흐릿해도 괜찮아요. 아래 일정을 보며 천천히 시작해 보아요.</p>
+    </div>
+    <div class="date" id="todayDate"></div>
+    <div class="clock" id="clock"></div>
+    <div class="greeting" id="greeting"></div>
+  </div>
+
+  <div class="box">
+    <h2>📅 오늘 할 일</h2>
+    <div id="scheduleList"><div class="loading">일정을 불러오는 중입니다...</div></div>
+  </div>
+
+  <div class="box">
+    <h2>👨‍👩‍👧 우리 가족 둘러보기</h2>
+    <p style="font-size:0.9rem; color:#998; margin-bottom:14px;">얼굴을 누르면 그 사람과의 소중한 이야기가 나와요.</p>
+    <div class="family-grid" id="familyGrid"></div>
+    <div class="family-detail" id="familyDetail"></div>
+  </div>
+
+  <div class="box">
+    <h2>🗺️ 내 인생 지도</h2>
+    <p style="font-size:0.9rem; color:#998; margin-bottom:14px;">할머니의 인생이 담긴 장소들이에요. 지도의 마커나 아래 이야기를 눌러보세요.</p>
+    <div id="lifeMap"></div>
+    <div class="life-timeline" id="lifeTimeline"></div>
+    <p class="map-note">💡 장소를 하나씩 눌러보며 "이곳 기억나세요?" 하고 대화를 나눠보세요.</p>
+  </div>
+
+  <div class="box">
+    <h2>❓ 궁금할 때 눌러보세요</h2>
+    <div id="faqList"></div>
+    <div class="glass-note">
+      💡 <strong>스마트 글래스 연동 아이디어:</strong> 이 시스템을 스마트 글래스와 연결하면 얼굴을 인식해서 귀로 알려줄 수 있어요.
+    </div>
+  </div>
+  <a class="back" href="../index.html">← 전체 프로젝트 목록으로</a>
+</div>
+
+<script>
+// 새로 전달해주신 안전 패치 완료된 Web App URL 적용
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwhcHGxFQ7UQziNuDwbLjS8naaWi9pR8juch_MhU1r9BiTbbC5_Nc3HGLjJB7H48cqw/exec";
+
+let family = [];
+let lifePlaces = [];
+let schedule = [];
+
+const faqs = [
+  { q: "🏠 여기가 어디예요?", a: "여기는 할머니 집이에요. 제주시 이도동, 30년 동안 사신 우리 집이에요. 안심하세요!" },
+  { q: "👧 방금 왔던 사람이 누구예요?", a: "손녀 채원이에요. 매일 학교 끝나고 할머니를 보러 와요." },
+  { q: "💊 약을 먹었나요?", a: "오늘 아침 약은 8시에 드셨어요. 다음 약은 저녁 6시 식사 후예요." },
+  { q: "📞 가족에게 전화하고 싶어요", a: "전화기의 큰 버튼 1번을 누르면 딸 미영에게, 2번을 누르면 아들 성호에게 연결돼요." },
+];
+
+function updateClock() {
+  const now = new Date();
+  const days = ["일", "월", "화", "수", "목", "금", "토"];
+  document.getElementById("todayDate").textContent = `${now.getFullYear()}년 ${now.getMonth() + 1}월 ${now.getDate()}일 (${days[now.getDay()]}요일)`;
+  const hour = now.getHours();
+  const isAM = hour < 12;
+  document.getElementById("clock").textContent = `${isAM ? "오전" : "오후"} ${hour % 12 || 12}시 ${now.getMinutes()}분`;
+  let greeting = "🌙 편안한 밤 되세요";
+  if (hour >= 5 && hour < 12) greeting = "🌅 좋은 아침이에요, 할머니!";
+  else if (hour >= 12 && hour < 18) greeting = "☀️ 좋은 오후예요, 할머니!";
+  else if (hour >= 18 && hour < 22) greeting = "🌆 좋은 저녁이에요, 할머니!";
+  document.getElementById("greeting").textContent = greeting;
+}
+updateClock();
+setInterval(updateClock, 1000);
+
+const faqEl = document.getElementById("faqList");
+faqs.forEach(function (faq, i) {
+  faqEl.innerHTML += `<button class="faq-btn" onclick="toggleFaq(${i})">${faq.q}</button><div class="faq-answer" id="faq${i}">${faq.a}</div>`;
+});
+function toggleFaq(i) {
+  const el = document.getElementById("faq" + i);
+  el.style.display = (el.style.display === "block") ? "none" : "block";
+}
+
+function getFaceHtml(photoData, className) {
+  if (!photoData) return `<span class="${className}-visual">👤</span>`;
+  if (String(photoData).includes('.') || String(photoData).includes('/')) {
+    return `<img src="가족사진/${photoData}" class="${className}-img" alt="가족 사진">`;
+  } else {
+    return `<span class="${className}-visual">${photoData}</span>`;
+  }
+}
+
+const lifeMap = L.map("lifeMap").setView([33.4300, 126.6300], 10);
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: '© OpenStreetMap' }).addTo(lifeMap);
+const lifeMarkers = [];
+
+// 데이터 수신 시작
+fetch(APPS_SCRIPT_URL)
+  .then(function (res) { return res.json(); })
+  .then(function (data) {
+    if (data.error) {
+      document.getElementById("scheduleList").innerHTML = `<div class='loading' style='color:red;'>구글 시트 에러: ${data.error}</div>`;
+      return;
+    }
+
+    family = data.family || [];
+    schedule = data.schedule || [];
+    lifePlaces = data.places || [];
+
+    // [A] 오늘 일정 렌더링
+    const scheduleEl = document.getElementById("scheduleList");
+    scheduleEl.innerHTML = "";
+    if (schedule.length === 0) scheduleEl.innerHTML = "<p style='text-align:center; color:#998;'>오늘 예정된 일정이 없습니다.</p>";
+    schedule.forEach(function (item) {
+      scheduleEl.innerHTML += `<div class="schedule-item"><span class="time">${item.time}</span><span>${item.icon} ${item.text}</span></div>`;
+    });
+
+    // [B] 가족 목록 렌더링
+    const familyGrid = document.getElementById("familyGrid");
+    familyGrid.innerHTML = ""; 
+    family.forEach(function (person, i) {
+      const card = document.createElement("div");
+      card.className = "family-card";
+      card.id = "fcard" + i;
+      card.innerHTML = `<div class="face">${getFaceHtml(person.photo, 'face')}</div><div class="fname">${person.name}</div><div class="frel">${person.relation}</div>`;
+      card.onclick = function () { showPerson(i); };
+      familyGrid.appendChild(card);
+    });
+
+    window.showPerson = function(index) {
+      const person = family[index];
+      if(!person) return;
+      family.forEach(function (_, i) {
+        const c = document.getElementById("fcard" + i);
+        if(c) c.classList.toggle("active", i === index);
+      });
+      const detail = document.getElementById("familyDetail");
+      detail.style.display = "block";
+      detail.innerHTML = `<div class="big-face">${getFaceHtml(person.photo, 'big-face')}</div><div class="dname">${person.name}</div><div class="drel">${person.relation}</div><div class="dstory">💬 ${person.story}</div>${person.phone ? `<a class="dcall" href="tel:${person.phone}">📞 ${person.name}에게 전화하기</a>` : ""}`;
+      detail.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    };
+    if (family.length > 0) showPerson(0);
+
+    // [C] 인생 지도 렌더링
+    const timelineEl = document.getElementById("lifeTimeline");
+    timelineEl.innerHTML = "";
+    lifePlaces.forEach(function (place) {
+      if(place.lat && place.lng) {
+        const marker = L.marker([place.lat, place.lng]).addTo(lifeMap).bindPopup(`<b>${place.year}</b><br><b>${place.title}</b><br>${place.story}`);
+        lifeMarkers.push(marker);
+        const item = document.createElement("div");
+        item.className = "life-item";
+        item.innerHTML = `<span class="year">${place.year}</span><span class="life-text"><b>${String(place.title).split("—")[0]}</b><br>${place.story}</span>`;
+        item.onclick = function () { lifeMap.setView([place.lat, place.lng], 13); marker.openPopup(); };
+        timelineEl.appendChild(item);
+      }
+    });
+  })
+  .catch(function (error) {
+    console.error(error);
+    document.getElementById("scheduleList").innerHTML = "<div class='loading' style='color:red;'>데이터 요청에 실패했습니다. 구글 시트 웹 앱의 배포 옵션('모든 사용자')을 다시 점검해 주세요.</div>";
+  });
+</script>
+</body>
+</html>
